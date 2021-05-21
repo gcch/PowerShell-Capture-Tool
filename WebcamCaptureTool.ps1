@@ -1,4 +1,12 @@
-﻿Set-StrictMode -Version Latest
+﻿# ======================================================================
+#
+# Webcam Capture Tool
+#
+# Copyright (C) 2021 tag. All rights reserved.
+#
+# ======================================================================
+
+Set-StrictMode -Version Latest
 
 # デバッグモード
 $DebugPreference = "SilentlyContinue"
