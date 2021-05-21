@@ -1,15 +1,16 @@
 ﻿Set-StrictMode -Version Latest
 
 # 多重起動禁止
+Write-Debug "多重起動チェック"
 $Mutex = New-Object System.Threading.Mutex -ArgumentList $false, "Global¥$(Split-Path -Path $PSCommandPath -Leaf)"
 try {
     if (-not $Mutex.WaitOne(0, $false)) {
-        Write-Warning "既に実行中です。"
+        Write-Debut "> すでに起動済みです。終了します。"
         $Mutex.Close()
         exit(0)
     }
 } catch [System.Threading.AbandonedMutexException] {
-    Write-Warning "前回の実行は強制終了しました。"
+    Write-Warning "前回の実行は強制終了しています"
 }
 
 # ツール名
