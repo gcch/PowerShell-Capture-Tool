@@ -1,36 +1,36 @@
-# OpenCvSharp Sample on PowerShell
+# PowerShell Webcam Capture Tool
 
 ## Overview
 
-PowerShell + OpenCvSharp ‚É‚Ä PC ‚ÉÚ‘±‚³‚ê‚½ Web ƒJƒƒ‰‚ÅB‰e‚µ•Û‘¶‚·‚éƒTƒ“ƒvƒ‹ƒXƒNƒŠƒvƒg
+PowerShell + OpenCvSharp ã«ã¦ PC ã«æ¥ç¶šã•ã‚ŒãŸ Web ã‚«ãƒ¡ãƒ©ã§æ’®å½±ã—ä¿å­˜ã™ã‚‹ã‚µãƒ³ãƒ—ãƒ«ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 
 ## Environment
 
-ƒXƒNƒŠƒvƒgì¬ŠÂ‹«‚ÍˆÈ‰º‚Ì’Ê‚è
+ã‚¹ã‚¯ãƒªãƒ—ãƒˆä½œæˆç’°å¢ƒã¯ä»¥ä¸‹ã®é€šã‚Š
 
 - Windows 10 Version 20H2
 - PowerShell 5.1.19041.906 (64-bit)
 - OpenCvSharp 4.5.2 (64-bit)
 
 ## Setup
-ˆÈ‰º‚Ìè‡‚Å€”õ‚µ‚Ä‚­‚¾‚³‚¢B
+ä»¥ä¸‹ã®æ‰‹é †ã§æº–å‚™ã—ã¦ãã ã•ã„ã€‚
 
-1. –{ƒXƒNƒŠƒvƒg‚ğƒ_ƒEƒ“ƒ[ƒh‚µA”CˆÓ‚ÌƒtƒHƒ‹ƒ_ (ˆÈ~A&lt;ƒXƒNƒŠƒvƒgƒtƒHƒ‹ƒ_&gt; ‚Æ‹LÚ) ‚É‰ğ“€‚·‚é
-1. [OpenCvSharp](https://github.com/shimat/opencvsharp/releases) ‚©‚çƒoƒCƒiƒŠƒf[ƒ^ (OpenCvSharp-x.y.z-YYYYMMDD.zip) ‚ğƒ_ƒEƒ“ƒ[ƒh
-1. ƒ_ƒEƒ“ƒ[ƒh‚µ‚½ "OpenCvSharp-x.y.z-YYYYMMDD.zip" ‚ğ‰ğ“€ (ˆÈ~A&lt;OpenCvSharp ‰ğ“€ƒtƒHƒ‹ƒ_&gt; ‚Æ‹LÚ)
-1. "&lt;OpenCvSharp ‰ğ“€ƒtƒHƒ‹ƒ_&gt;\ManagedLib\OpenCvSharp.dll" ‹y‚Ñ A"&lt;OpenCvSharp ‰ğ“€ƒtƒHƒ‹ƒ_&gt;\ManagedLib\OpenCvSharp.Extensions.dll" ‚ğ &lt;ƒXƒNƒŠƒvƒgƒtƒHƒ‹ƒ_&gt; ’¼‰º‚ÉƒRƒs[
-1. "&lt;OpenCvSharp ‰ğ“€ƒtƒHƒ‹ƒ_&gt;\NativeLib\win\x86\OpenCvSharpExtern.dll" ‚ğ "&lt;ƒXƒNƒŠƒvƒgƒtƒHƒ‹ƒ_&gt;\x86" ‚ÉƒRƒs[
-1. "&lt;OpenCvSharp ‰ğ“€ƒtƒHƒ‹ƒ_&gt;\NativeLib\win\x64\OpenCvSharpExtern.dll" ‚ğ "&lt;ƒXƒNƒŠƒvƒgƒtƒHƒ‹ƒ_&gt;\x64" ‚ÉƒRƒs[
+1. æœ¬ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ã€ä»»æ„ã®ãƒ•ã‚©ãƒ«ãƒ€ (ä»¥é™ã€&lt;ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ•ã‚©ãƒ«ãƒ€&gt; ã¨è¨˜è¼‰) ã«è§£å‡ã™ã‚‹
+1. [OpenCvSharp](https://github.com/shimat/opencvsharp/releases) ã‹ã‚‰ãƒã‚¤ãƒŠãƒªãƒ‡ãƒ¼ã‚¿ (OpenCvSharp-x.y.z-YYYYMMDD.zip) ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰
+1. ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ãŸ "OpenCvSharp-x.y.z-YYYYMMDD.zip" ã‚’è§£å‡ (ä»¥é™ã€&lt;OpenCvSharp è§£å‡ãƒ•ã‚©ãƒ«ãƒ€&gt; ã¨è¨˜è¼‰)
+1. "&lt;OpenCvSharp è§£å‡ãƒ•ã‚©ãƒ«ãƒ€&gt;\ManagedLib\OpenCvSharp.dll" åŠã³ ã€"&lt;OpenCvSharp è§£å‡ãƒ•ã‚©ãƒ«ãƒ€&gt;\ManagedLib\OpenCvSharp.Extensions.dll" ã‚’ &lt;ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ•ã‚©ãƒ«ãƒ€&gt; ç›´ä¸‹ã«ã‚³ãƒ”ãƒ¼
+1. "&lt;OpenCvSharp è§£å‡ãƒ•ã‚©ãƒ«ãƒ€&gt;\NativeLib\win\x86\OpenCvSharpExtern.dll" ã‚’ "&lt;ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ•ã‚©ãƒ«ãƒ€&gt;\x86" ã«ã‚³ãƒ”ãƒ¼
+1. "&lt;OpenCvSharp è§£å‡ãƒ•ã‚©ãƒ«ãƒ€&gt;\NativeLib\win\x64\OpenCvSharpExtern.dll" ã‚’ "&lt;ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ•ã‚©ãƒ«ãƒ€&gt;\x64" ã«ã‚³ãƒ”ãƒ¼
 
 ## Setting
-uCaptureTool.ps1v‚ğ•ÒW‚µA‰æ‘œ•Û‘¶æƒtƒHƒ‹ƒ_‚ğİ’è‚µ‚Ä‚­‚¾‚³‚¢BƒfƒtƒHƒ‹ƒg‚Å‚ÍƒXƒNƒŠƒvƒg‚Æ“¯‚¶ƒtƒHƒ‹ƒ_‚ªİ’è‚³‚ê‚Ä‚¢‚Ü‚·B
+ã€ŒCaptureTool.ps1ã€ã‚’ç·¨é›†ã—ã€ç”»åƒä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€ã‚’è¨­å®šã—ã¦ãã ã•ã„ã€‚ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ã‚¹ã‚¯ãƒªãƒ—ãƒˆã¨åŒã˜ãƒ•ã‚©ãƒ«ãƒ€ãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã™ã€‚
 
 ```
-$SaveDirectory = <•Û‘¶æƒtƒHƒ‹ƒ_ƒpƒX>
+$SaveDirectory = <ä¿å­˜å…ˆãƒ•ã‚©ãƒ«ãƒ€ãƒ‘ã‚¹>
 ```
 
 ## Launch
-uCaptureTool.vbsv‚ğƒ_ƒuƒ‹ƒNƒŠƒbƒv‚µ‚Ä‹N“®‚µ‚Ä‚­‚¾‚³‚¢B
+ã€ŒCaptureTool.vbsã€ã‚’ãƒ€ãƒ–ãƒ«ã‚¯ãƒªãƒƒãƒ—ã—ã¦èµ·å‹•ã—ã¦ãã ã•ã„ã€‚
 
 ## References
 - [GitHub - shimat/opencvsharp: OpenCV wrapper for .NET](https://github.com/shimat/opencvsharp)
