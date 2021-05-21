@@ -9,12 +9,12 @@ Write-Debug "多重起動チェック"
 $Mutex = New-Object System.Threading.Mutex -ArgumentList $false, "Global¥$(Split-Path -Path $PSCommandPath -Leaf)"
 try {
     if (-not $Mutex.WaitOne(0, $false)) {
-        Write-Debut "> すでに起動済みです。終了します。"
+        Write-Debug "> すでに起動済みです。終了します。"
         $Mutex.Close()
         exit(0)
     }
 } catch [System.Threading.AbandonedMutexException] {
-    Write-Warning "> 前回の実行は強制終了しています。"
+    Write-Debug "> 前回の実行は強制終了しています。"
 }
 
 # ツール名
@@ -29,7 +29,6 @@ Write-Debug "Copyright (C) 2021 tag. All rights reserved."
 Write-Debug ""
 Write-Debug "======================================================================"
 Write-Debug ""
-
 
 # スクリプトフォルダへの移動
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -80,6 +79,9 @@ foreach ($record in $Res) {
 
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "カメラ関連関数の準備"
+
+# 重複保存禁止フラグ
+$global:AlreadySaved = $false
 
 $LoadDialogWidth = 320
 $LoadDialogHeight = 64
@@ -142,6 +144,7 @@ function Capture() {
         }
         $Bitmap = [OpenCvSharp.Extensions.BitmapConverter]::ToBitmap($Frame)
         $global:PictureBox.Image = $Bitmap
+        $global:AlreadySaved = $false
     } catch {
         [System.Windows.Forms.MessageBox]::Show("カメラのオープンに失敗しました。カメラを使用しているアプリケーションを使用している場合には、そのアプリケーションを終了した後、再試行してください。", "エラー") 
     }
@@ -149,6 +152,12 @@ function Capture() {
 
 function SaveAsFile() {
     Write-Debug "ファイルで保存"
+
+    if ($global:AlreadySaved) {
+        $global:Label.Text = "すでに保存済みのデータであるため、保存されませんでした。"
+        return
+    }
+
     $Bitmap = $global:PictureBox.Image
 
     $FilePath = Join-Path -Path $SaveDirectory -ChildPath $(GenerateFilename)
@@ -158,6 +167,7 @@ function SaveAsFile() {
 
     if (Test-Path $FilePath) {
         $global:Label.Text = "保存に成功しました。 (保存先: $FilePath)"
+        $global:Alreadysaved = $true
     } else {
         $global:Label.Text = "エラー: 保存に失敗しました。 (保存先: $FilePath)"
         [System.Windows.Forms.MessageBox]::Show("保存に失敗しました。撮影が完了しているか、保存先にアクセスできるか確認してください。", "エラー") 
