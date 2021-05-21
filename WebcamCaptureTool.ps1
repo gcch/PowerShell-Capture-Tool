@@ -1,9 +1,12 @@
 Set-StrictMode -Version Latest
 
+# ツール名
+$AppName = "PowerShell Webcam Capture Tool"
+
 Write-Debug ""
 Write-Debug "======================================================================"
 Write-Debug ""
-Write-Debug "PowerShell Webcam Capture Tool"
+Write-Debug $AppName
 Write-Debug ""
 Write-Debug "Copyright (C) 2021 tag. All rights reserved."
 Write-Debug ""
@@ -12,7 +15,7 @@ Write-Debug ""
 
 # デバッグモード
 $DebugPreference = "SilentlyContinue"
-$DebugPreference = "Continue"
+#$DebugPreference = "Continue"
 
 # スクリプトフォルダへの移動
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -21,9 +24,6 @@ Set-Location $ScriptDir
 
 # 画像保存先
 $SaveDirectory = $ScriptDir
-
-# ツール名
-$AppName = "PowerShell Webcam Capture Tool"
 
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "動作環境"
@@ -184,7 +184,7 @@ $CaptureMenuItem.ShowShortcutKeys = $True
 $CaptureMenuItem.Add_Click({
     Capture
 })
-$MenuStrip.Items.Add($CaptureMenuItem)
+[void]$MenuStrip.Items.Add($CaptureMenuItem)
 
 # メニュー - 保存
 $SaveAsFileMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
@@ -193,7 +193,7 @@ $SaveAsFileMenuItem.ShortcutKeys = [System.Windows.Forms.Keys]::Control, [System
 $SaveAsFileMenuItem.Add_Click({
     SaveAsFile
 })
-$MenuStrip.Items.Add($SaveAsFileMenuItem)
+[void]$MenuStrip.Items.Add($SaveAsFileMenuItem)
 
 # メニュー - 終了
 $QuitMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
@@ -202,7 +202,7 @@ $QuitMenuItem.ShortcutKeys = [System.Windows.Forms.Keys]::Control, [System.Windo
 $QuitMenuItem.Add_Click({
     $global:MainForm.Close()
 })
-$MenuStrip.Items.Add($QuitMenuItem)
+[void]$MenuStrip.Items.Add($QuitMenuItem)
 
 # メニュー - アプリについて
 $AboutMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
@@ -254,7 +254,7 @@ $AboutMenuItem.Add_Click({
 
     [void] $AboutForm.Show()
 })
-$MenuStrip.Items.Add($AboutMenuItem)
+[void]$MenuStrip.Items.Add($AboutMenuItem)
 
 # ピクチャーボックス
 $global:PictureBox = New-Object System.Windows.Forms.PictureBox
