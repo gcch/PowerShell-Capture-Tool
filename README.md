@@ -1,4 +1,4 @@
-# PowerShell Webcam Capture Tool
+﻿# PowerShell Webcam Capture Tool
 
 ## Overview
 
@@ -23,14 +23,14 @@ PowerShell + OpenCvSharp にて PC に接続された Web カメラで撮影し�
 1. "&lt;OpenCvSharp 解凍フォルダ&gt;\NativeLib\win\x64\OpenCvSharpExtern.dll" を "&lt;スクリプトフォルダ&gt;\x64" にコピー
 
 ## Setting
-「CaptureTool.ps1」を編集し、画像保存先フォルダを設定してください。デフォルトではスクリプトと同じフォルダが設定されています。
+「WebcamCaptureTool.ps1」を編集し、画像保存先フォルダを設定してください。デフォルトではスクリプトと同じフォルダが設定されています。
 
 ```
 $SaveDirectory = <保存先フォルダパス>
 ```
 
 ## Launch
-「CaptureTool.vbs」をダブルクリップして起動してください。
+「WebcamCaptureTool.vbs」をダブルクリップして起動してください。
 
 ## References
 - [GitHub - shimat/opencvsharp: OpenCV wrapper for .NET](https://github.com/shimat/opencvsharp)
