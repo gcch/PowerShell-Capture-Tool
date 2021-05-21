@@ -36,7 +36,7 @@ $SaveDirectory = <保存先フォルダパス>
 - [GitHub - shimat/opencvsharp: OpenCV wrapper for .NET](https://github.com/shimat/opencvsharp)
 
 ## License
-All components is licensed under Apache License 2.0.
+All components are licensed under Apache License 2.0.
 
 ## Author
 tag (Twitter: [@tag_ism](https://twitter.com/tag_ism "tag (@tag_ism) | Twitter") / Blog: http://karat5i.blogspot.jp/)
