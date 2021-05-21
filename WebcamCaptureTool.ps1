@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 
 # ÉcÅ[Éãñº
-$AppName = "PowerShell Webcam Capture Tool"
+$AppName = "Webcam Capture Tool"
 
 Write-Debug ""
 Write-Debug "======================================================================"
