@@ -1,6 +1,18 @@
-Set-StrictMode -Version Latest
+ï»¿Set-StrictMode -Version Latest
 
-# ƒc[ƒ‹–¼
+# å¤šé‡èµ·å‹•ç¦æ­¢
+$Mutex = New-Object System.Threading.Mutex -ArgumentList $false, "GlobalÂ¥$(Split-Path -Path $PSCommandPath -Leaf)"
+try {
+    if (-not $Mutex.WaitOne(0, $false)) {
+        Write-Warning "æ—¢ã«å®Ÿè¡Œä¸­ã§ã™ã€‚"
+        $Mutex.Close()
+        exit(0)
+    }
+} catch [System.Threading.AbandonedMutexException] {
+    Write-Warning "å‰å›ã®å®Ÿè¡Œã¯å¼·åˆ¶çµ‚äº†ã—ã¾ã—ãŸã€‚"
+}
+
+# ãƒ„ãƒ¼ãƒ«å
 $AppName = "Webcam Capture Tool"
 
 Write-Debug ""
@@ -13,20 +25,20 @@ Write-Debug ""
 Write-Debug "======================================================================"
 Write-Debug ""
 
-# ƒfƒoƒbƒOƒ‚[ƒh
+# ãƒ‡ãƒãƒƒã‚°ãƒ¢ãƒ¼ãƒ‰
 $DebugPreference = "SilentlyContinue"
 #$DebugPreference = "Continue"
 
-# ƒXƒNƒŠƒvƒgƒtƒHƒ‹ƒ_‚Ö‚ÌˆÚ“®
+# ã‚¹ã‚¯ãƒªãƒ—ãƒˆãƒ•ã‚©ãƒ«ãƒ€ã¸ã®ç§»å‹•
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
 Write-Debug "> Script Directory: $ScriptDir"
 Set-Location $ScriptDir
 
-# ‰æ‘œ•Û‘¶æ
+# ç”»åƒä¿å­˜å…ˆ
 $SaveDirectory = $ScriptDir
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "“®ìŠÂ‹«"
+Write-Debug "å‹•ä½œç’°å¢ƒ"
 $Version = $PSVersionTable.PSVersion
 Write-Debug "> PowerShell: $Version"
 $Architecture = "Unknown"
@@ -39,17 +51,17 @@ Write-Debug "> Process: $Architecture"
 $LibDir = Join-Path -Path $ScriptDir -ChildPath $Architecture
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "OpenCvSharpExtern.dll ‚ÌƒRƒs["
+Write-Debug "OpenCvSharpExtern.dll ã®ã‚³ãƒ”ãƒ¼"
 $OpenCvSharpExternDLLFileName = "OpenCvSharpExtern.dll"
 Copy-Item $(Join-Path -Path $LibDir -ChildPath "$OpenCvSharpExternDLLFileName") $(Join-Path -Path $ScriptDir -ChildPath "$OpenCvSharpExternDLLFileName") -Force
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "ƒAƒZƒ“ƒuƒŠ‚Ìƒ[ƒh"
+Write-Debug "ã‚¢ã‚»ãƒ³ãƒ–ãƒªã®ãƒ­ãƒ¼ãƒ‰"
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "OpenCvSharp ‚Ìƒ[ƒh"
+Write-Debug "OpenCvSharp ã®ãƒ­ãƒ¼ãƒ‰"
 $OpenCvSharpDLL = Join-Path -Path $ScriptDir -ChildPath "OpenCvSharp.dll"
 $Res = [System.Reflection.Assembly]::LoadFrom($OpenCvSharpDLL)
 Write-Debug "> $Res"
@@ -58,14 +70,14 @@ $Res = [System.Reflection.Assembly]::LoadFrom($OpenCvSharpExtDLL)
 Write-Debug "> $Res"
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "ƒAƒZƒ“ƒuƒŠƒ[ƒhó‹µ"
+Write-Debug "ã‚¢ã‚»ãƒ³ãƒ–ãƒªãƒ­ãƒ¼ãƒ‰çŠ¶æ³"
 $Res = [System.AppDomain]::CurrentDomain.GetAssemblies() | % { $_.GetName().Name }
 foreach ($record in $Res) {
     Write-Debug "> $record"
 }
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "ƒJƒƒ‰ŠÖ˜AŠÖ”‚Ì€”õ"
+Write-Debug "ã‚«ãƒ¡ãƒ©é–¢é€£é–¢æ•°ã®æº–å‚™"
 
 $LoadDialogWidth = 320
 $LoadDialogHeight = 64
@@ -73,16 +85,16 @@ $LoadDialogHeight = 64
 $global:LoadForm = New-Object System.Windows.Forms.Form
 $global:LoadForm.ClientSize = New-Object System.Drawing.Size($LoadDialogWidth, $LoadDialogHeight)
 $global:LoadForm.StartPosition = "CenterScreen"
-$global:LoadForm.AutoSize = $False
+$global:LoadForm.AutoSize = $false
 $global:LoadForm.FormBorderStyle = "None"
-$global:LoadForm.MaximizeBox = $False
-$global:LoadForm.MinimizeBox = $False
-$global:LoadForm.Topmost = $True
+$global:LoadForm.MaximizeBox = $false
+$global:LoadForm.MinimizeBox = $false
+$global:LoadForm.Topmost = $true
 
 $global:LoadMessageLabel = New-Object System.Windows.Forms.Label
 $global:LoadMessageLabel.Location = New-Object System.Drawing.Point(0, 0)
 $global:LoadMessageLabel.Size = New-Object System.Drawing.Size($LoadDialogWidth, $LoadDialogHeight)
-$global:LoadMessageLabel.Text = "‹N“®’†..."
+$global:LoadMessageLabel.Text = "èµ·å‹•ä¸­..."
 $global:LoadMessageLabel.Font = [System.Drawing.Font]::new("Meiryo UI", 12, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Point, 128)
 $global:LoadMessageLabel.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
 $global:LoadForm.Controls.Add($global:LoadMessageLabel)
@@ -100,13 +112,14 @@ $global:Capture = [OpenCvSharp.VideoCapture]::new()
 $global:LoadForm.Close()
 
 if (-not $global:Capture.IsOpened()) {
-    Write-Host "ƒJƒƒ‰‚ÌƒI[ƒvƒ“‚É¸”s‚µ‚Ü‚µ‚½B"
+    Write-Host "ã‚«ãƒ¡ãƒ©ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸã€‚"
+    [System.Windows.Forms.MessageBox]::Show("ã‚«ãƒ¡ãƒ©ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸã€‚ã‚«ãƒ¡ãƒ©ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹å ´åˆã«ã¯ã€ãã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†ã—ãŸå¾Œã€å†è©¦è¡Œã—ã¦ãã ã•ã„ã€‚", "ã‚¨ãƒ©ãƒ¼") 
     FinalizeCamera
     exit(-1)
 }
 
 function FinalizeCamera() {
-    Write-Debug "ƒJƒƒ‰‚ÌI—¹"
+    Write-Debug "ã‚«ãƒ¡ãƒ©ã®çµ‚äº†"
     if ($global:Capture.IsOpened()) {
         $global:Capture.Release()
         $global:Capture.Dispose()
@@ -114,22 +127,26 @@ function FinalizeCamera() {
 }
 
 function Capture() {
-    Write-Debug "ƒJƒƒ‰‚©‚çƒtƒŒ[ƒ€‚ğæ“¾"
-    $Frame = [OpenCvSharp.Mat]::new()
-    $global:Capture.Read($Frame)
-    $global:Label.Text = "B‰e‚É¬Œ÷‚µ‚Ü‚µ‚½B•\¦‚³‚ê‚Ä‚¢‚é‰æ‘œ‚ğ•Û‘¶‚·‚éê‡‚É‚Í [•Û‘¶] ‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B"
-    if ($Frame.Empty()) {
-        Write-Host "ƒtƒŒ[ƒ€‚Ìæ“¾‚É¸”s"
-        $global:Label.Text = "ƒGƒ‰[: ƒtƒŒ[ƒ€‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½B"
-        FinalizeCamera
-        exit(-1)
+    Write-Debug "ã‚«ãƒ¡ãƒ©ã‹ã‚‰ãƒ•ãƒ¬ãƒ¼ãƒ ã‚’å–å¾—"
+    try {
+        $Frame = [OpenCvSharp.Mat]::new()
+        $global:Capture.Read($Frame)
+        $global:Label.Text = "æ’®å½±ã«æˆåŠŸã—ã¾ã—ãŸã€‚è¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹ç”»åƒã‚’ä¿å­˜ã™ã‚‹å ´åˆã«ã¯ [ä¿å­˜] ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„ã€‚"
+        if ($Frame.Empty()) {
+            Write-Host "ãƒ•ãƒ¬ãƒ¼ãƒ ã®å–å¾—ã«å¤±æ•—"
+            $global:Label.Text = "ã‚¨ãƒ©ãƒ¼: ãƒ•ãƒ¬ãƒ¼ãƒ ã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸã€‚"
+            FinalizeCamera
+            exit(-1)
+        }
+        $Bitmap = [OpenCvSharp.Extensions.BitmapConverter]::ToBitmap($Frame)
+        $global:PictureBox.Image = $Bitmap
+    } catch {
+        [System.Windows.Forms.MessageBox]::Show("ã‚«ãƒ¡ãƒ©ã®ã‚ªãƒ¼ãƒ—ãƒ³ã«å¤±æ•—ã—ã¾ã—ãŸã€‚ã‚«ãƒ¡ãƒ©ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹å ´åˆã«ã¯ã€ãã®ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†ã—ãŸå¾Œã€å†è©¦è¡Œã—ã¦ãã ã•ã„ã€‚", "ã‚¨ãƒ©ãƒ¼") 
     }
-    $Bitmap = [OpenCvSharp.Extensions.BitmapConverter]::ToBitmap($Frame)
-    $global:PictureBox.Image = $Bitmap
 }
 
 function SaveAsFile() {
-    Write-Debug "ƒtƒ@ƒCƒ‹‚Å•Û‘¶"
+    Write-Debug "ãƒ•ã‚¡ã‚¤ãƒ«ã§ä¿å­˜"
     $Bitmap = $global:PictureBox.Image
 
     $FilePath = Join-Path -Path $SaveDirectory -ChildPath $(GenerateFilename)
@@ -138,10 +155,10 @@ function SaveAsFile() {
     $Bitmap.Save($FilePath)
 
     if (Test-Path $FilePath) {
-        $global:Label.Text = "•Û‘¶‚É¬Œ÷‚µ‚Ü‚µ‚½B (•Û‘¶æ: $FilePath)"
+        $global:Label.Text = "ä¿å­˜ã«æˆåŠŸã—ã¾ã—ãŸã€‚ (ä¿å­˜å…ˆ: $FilePath)"
     } else {
-        $global:Label.Text = "ƒGƒ‰[: •Û‘¶‚É¸”s‚µ‚Ü‚µ‚½B (•Û‘¶æ: $FilePath)"
-        [System.Windows.Forms.MessageBox]::Show("•Û‘¶‚É¸”s‚µ‚Ü‚µ‚½BB‰e‚ªŠ®—¹‚µ‚Ä‚¢‚é‚©A•Û‘¶æ‚ÉƒAƒNƒZƒX‚Å‚«‚é‚©Šm”F‚µ‚Ä‚­‚¾‚³‚¢B", "ƒGƒ‰[") 
+        $global:Label.Text = "ã‚¨ãƒ©ãƒ¼: ä¿å­˜ã«å¤±æ•—ã—ã¾ã—ãŸã€‚ (ä¿å­˜å…ˆ: $FilePath)"
+        [System.Windows.Forms.MessageBox]::Show("ä¿å­˜ã«å¤±æ•—ã—ã¾ã—ãŸã€‚æ’®å½±ãŒå®Œäº†ã—ã¦ã„ã‚‹ã‹ã€ä¿å­˜å…ˆã«ã‚¢ã‚¯ã‚»ã‚¹ã§ãã‚‹ã‹ç¢ºèªã—ã¦ãã ã•ã„ã€‚", "ã‚¨ãƒ©ãƒ¼") 
     }
 }
 
@@ -151,7 +168,7 @@ function GenerateFilename() {
 }
 
 Write-Debug "----------------------------------------------------------------------"
-Write-Debug "ƒEƒCƒ“ƒhƒE‚Ì¶¬"
+Write-Debug "ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦ã®ç”Ÿæˆ"
 
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
@@ -163,71 +180,70 @@ $ButtonHeight = [int]32
 $LabelWidth = [int]($CaptureWidth - $Margin * 2)
 $LabelHeight = [int]24
 
-# ƒtƒH[ƒ€
+# ãƒ•ã‚©ãƒ¼ãƒ 
 $global:MainForm = New-Object System.Windows.Forms.Form
 $global:MainForm.ClientSize = New-Object System.Drawing.Size([int]($CaptureWidth + $Margin * 2), [int]($CaptureHeight + $ButtonHeight + $Margin * 3))
 $global:MainForm.StartPosition = "CenterScreen"
-$global:MainForm.AutoSize = $False
+$global:MainForm.AutoSize = $false
 $global:MainForm.FormBorderStyle = "FixedSingle"
-$global:MainForm.MaximizeBox = $False
-$global:MainForm.MinimizeBox = $False
+$global:MainForm.MaximizeBox = $false
+$global:MainForm.MinimizeBox = $false
 $global:MainForm.Text = "$AppName ($env:USERNAME@$env:COMPUTERNAME)"
 
-# ƒƒjƒ…[ƒXƒgƒŠƒbƒv
+# ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‚¹ãƒˆãƒªãƒƒãƒ—
 $MenuStrip = New-Object System.Windows.Forms.MenuStrip
 $global:MainForm.MainMenuStrip = $MenuStrip
 $global:MainForm.Controls.Add($MenuStrip)
 
-# ƒƒjƒ…[ - B‰e
+# ãƒ¡ãƒ‹ãƒ¥ãƒ¼ - æ’®å½±
 $CaptureMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$CaptureMenuItem.Text = "B‰e(&W)"
+$CaptureMenuItem.Text = "æ’®å½±(&W)"
 $CaptureMenuItem.ShortcutKeys = [System.Windows.Forms.Keys]::Control, [System.Windows.Forms.Keys]::W
-$CaptureMenuItem.ShowShortcutKeys = $True
 $CaptureMenuItem.Add_Click({
     Capture
 })
 [void]$MenuStrip.Items.Add($CaptureMenuItem)
 
-# ƒƒjƒ…[ - •Û‘¶
+# ãƒ¡ãƒ‹ãƒ¥ãƒ¼ - ä¿å­˜
 $SaveAsFileMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$SaveAsFileMenuItem.Text = "•Û‘¶(&S)"
+$SaveAsFileMenuItem.Text = "ä¿å­˜(&S)"
 $SaveAsFileMenuItem.ShortcutKeys = [System.Windows.Forms.Keys]::Control, [System.Windows.Forms.Keys]::S
 $SaveAsFileMenuItem.Add_Click({
     SaveAsFile
 })
 [void]$MenuStrip.Items.Add($SaveAsFileMenuItem)
 
-# ƒƒjƒ…[ - I—¹
+# ãƒ¡ãƒ‹ãƒ¥ãƒ¼ - çµ‚äº†
 $QuitMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$QuitMenuItem.Text = "I—¹(&Q)"
+$QuitMenuItem.Text = "çµ‚äº†(&Q)"
 $QuitMenuItem.ShortcutKeys = [System.Windows.Forms.Keys]::Control, [System.Windows.Forms.Keys]::Q
 $QuitMenuItem.Add_Click({
     $global:MainForm.Close()
 })
 [void]$MenuStrip.Items.Add($QuitMenuItem)
 
-# ƒƒjƒ…[ - ƒAƒvƒŠ‚É‚Â‚¢‚Ä
+# ãƒ¡ãƒ‹ãƒ¥ãƒ¼ - ã‚¢ãƒ—ãƒªã«ã¤ã„ã¦
 $AboutMenuItem = New-Object System.Windows.Forms.ToolStripMenuItem
-$AboutMenuItem.Text = "ƒAƒvƒŠ‚É‚Â‚¢‚Ä(&A)"
+$AboutMenuItem.Text = "ã‚¢ãƒ—ãƒªã«ã¤ã„ã¦(&A)"
 $AboutMenuItem.ShortcutKeys = [System.Windows.Forms.Keys]::Control, [System.Windows.Forms.Keys]::A
 $AboutMenuItem.Add_Click({ 
     
     $AboutFormMargin = [int]24
     $AboutFormWidth = [int]320
-    $AboutFormHeight = [int]240
+    $AboutFormHeight = [int]220
     $AboutLabelHeight = [int]36
 
     $AboutForm = New-Object System.Windows.Forms.Form
     $AboutForm.ClientSize = New-Object System.Drawing.Size($AboutFormWidth, $AboutFormHeight)
     $AboutForm.StartPosition = "CenterScreen"
-    $AboutForm.AutoSize = $False
+    $AboutForm.AutoSize = $false
     $AboutForm.FormBorderStyle = "FixedSingle"
-    $AboutForm.MaximizeBox = $False
-    $AboutForm.MinimizeBox = $False
-    $AboutForm.Text = "ƒAƒvƒŠ‚É‚Â‚¢‚Ä"
+    $AboutForm.MaximizeBox = $false
+    $AboutForm.MinimizeBox = $false
+    $AboutForm.Text = "ã‚¢ãƒ—ãƒªã«ã¤ã„ã¦"
     $AboutForm.Owner = $global:MainForm
 
-    # ƒAƒvƒŠ–¼
+    # ã‚¢ãƒ—ãƒªå
     $AboutAppNameLabel = New-Object System.Windows.Forms.Label
     $AboutAppNameLabel.Location = New-Object System.Drawing.Point([int]($AboutFormMargin), [int]($AboutFormMargin))
     $AboutAppNameLabel.Size = New-Object System.Drawing.Size([int]($AboutFormWidth - $AboutFormMargin * 2), [int]($AboutLabelHeight))
@@ -236,7 +252,7 @@ $AboutMenuItem.Add_Click({
     $AboutAppNameLabel.TextAlign = "MiddleCenter"
     $AboutForm.Controls.Add($AboutAppNameLabel)
 
-    # ƒRƒs[ƒ‰ƒCƒg
+    # ã‚³ãƒ”ãƒ¼ãƒ©ã‚¤ãƒˆ
     $AboutCopyrightLabel = New-Object System.Windows.Forms.Label
     $AboutCopyrightLabel.Location = New-Object System.Drawing.Point([int]($AboutFormMargin), [int]($AboutFormMargin + $AboutLabelHeight))
     $AboutCopyrightLabel.Size = New-Object System.Drawing.Size([int]($AboutFormWidth - $AboutFormMargin * 2), [int]($AboutLabelHeight))
@@ -245,11 +261,11 @@ $AboutMenuItem.Add_Click({
     $AboutCopyrightLabel.TextAlign = "MiddleCenter"
     $AboutForm.Controls.Add($AboutCopyrightLabel)
 
-    # ŠÂ‹«•Ï”
+    # ç’°å¢ƒå¤‰æ•°
     $AboutCopyrightLabel = New-Object System.Windows.Forms.Label
     $AboutCopyrightLabel.Location = New-Object System.Drawing.Point([int]($AboutFormMargin), [int]($AboutFormMargin + $AboutLabelHeight * 2))
     $AboutCopyrightLabel.Size = New-Object System.Drawing.Size([int]($AboutFormWidth - $AboutFormMargin * 2), [int]($AboutLabelHeight * 3))
-    $AboutCopyrightLabel.Text = "Powered by OpenCvSharp`n`nPowerShell $Version ($Architecture)"
+    $AboutCopyrightLabel.Text = "Powered by`n`nPowerShell $Version ($Architecture)`nOpenCvSharp"
     $AboutCopyrightLabel.Font = [System.Drawing.Font]::new("MS UI Gothic", 9, [System.Drawing.FontStyle]::Regular, [System.Drawing.GraphicsUnit]::Point, 128)
     $AboutCopyrightLabel.TextAlign = "MiddleCenter"
     $AboutForm.Controls.Add($AboutCopyrightLabel)
@@ -258,21 +274,21 @@ $AboutMenuItem.Add_Click({
 })
 [void]$MenuStrip.Items.Add($AboutMenuItem)
 
-# ƒsƒNƒ`ƒƒ[ƒ{ƒbƒNƒX
+# ãƒ”ã‚¯ãƒãƒ£ãƒ¼ãƒœãƒƒã‚¯ã‚¹
 $global:PictureBox = New-Object System.Windows.Forms.PictureBox
 $global:PictureBox.Location = New-Object System.Drawing.Point($Margin, $Margin)
 $global:PictureBox.Size = New-Object System.Drawing.Size($CaptureWidth, $CaptureHeight)
 $global:MainForm.Controls.Add($PictureBox)
 
-# ƒ‰ƒxƒ‹‚ğ•\¦
+# ãƒ©ãƒ™ãƒ«ã‚’è¡¨ç¤º
 $global:Label = New-Object System.Windows.Forms.Label
 $global:Label.Location = New-Object System.Drawing.Point([int]($Margin), [int]($CaptureHeight + $Margin * 2))
 $global:Label.Size = New-Object System.Drawing.Size($LabelWidth, $LabelHeight)
-$global:Label.Text = "[B‰e] ‚ğƒNƒŠƒbƒN‚µ‚Ä‚­‚¾‚³‚¢B"
+$global:Label.Text = "[æ’®å½±] ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦ãã ã•ã„ã€‚"
 $global:Label.TextAlign = "MiddleLeft"
 $global:MainForm.Controls.Add($global:Label)
 
-# ƒtƒH[ƒ€‚ÌƒAƒNƒeƒBƒx[ƒg
+# ãƒ•ã‚©ãƒ¼ãƒ ã®ã‚¢ã‚¯ãƒ†ã‚£ãƒ™ãƒ¼ãƒˆ
 $global:MainForm.Add_Shown({
     #Capture
     $global:MainForm.Activate()
@@ -280,4 +296,8 @@ $global:MainForm.Add_Shown({
 [void] $global:MainForm.ShowDialog()
 
 FinalizeCamera
+
+$Mutex.ReleaseMutex()
+$Mutex.Close()
+
 exit(0)
