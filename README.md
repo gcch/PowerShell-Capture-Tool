@@ -2,7 +2,7 @@
 
 ## Overview
 
-PowerShell + OpenCvSharp にて PC に接続された Web カメラで撮影し保存するサンプルスクリプト
+PowerShell + OpenCvSharp にて PC に接続された Web カメラで画像撮影し、ファイル保存するサンプルスクリプト
 
 ## Environment
 
