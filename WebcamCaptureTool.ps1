@@ -10,7 +10,7 @@ try {
         exit(0)
     }
 } catch [System.Threading.AbandonedMutexException] {
-    Write-Warning "前回の実行は強制終了しています"
+    Write-Warning "> 前回の実行は強制終了しています。"
 }
 
 # ツール名
