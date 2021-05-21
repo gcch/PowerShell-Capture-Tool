@@ -4,6 +4,12 @@
 
 PowerShell + OpenCvSharp にて PC に接続された Web カメラで画像撮影し、ファイル保存するサンプルスクリプト
 
+## Screenshots
+
+<div align="center">
+  <img src="https://github.com/gcch/PowerShell-Webcam-Capture-Tool/blob/main/Screenshots/PowerShell-Webcam-Capture-Tool_ss-01.jpg" alt="" title="PowerShell-Webcam-Capture-Tool_ss-01">
+</div>
+
 ## Environment
 
 スクリプト作成環境は以下の通り
