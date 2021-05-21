@@ -117,8 +117,10 @@ function Capture() {
     Write-Debug "カメラからフレームを取得"
     $Frame = [OpenCvSharp.Mat]::new()
     $global:Capture.Read($Frame)
+    $global:Label.Text = "撮影に成功しました。表示されている画像を保存する場合には [保存] をクリックしてください。"
     if ($Frame.Empty()) {
-        Write-Host "フレームの取得に失敗しました。"
+        Write-Host "フレームの取得に失敗"
+        $global:Label.Text = "エラー: フレームの取得に失敗しました。"
         FinalizeCamera
         exit(-1)
     }
@@ -136,9 +138,9 @@ function SaveAsFile() {
     $Bitmap.Save($FilePath)
 
     if (Test-Path $FilePath) {
-        $global:Label.Text = "保存成功 ($FilePath)"
+        $global:Label.Text = "保存に成功しました。 (保存先: $FilePath)"
     } else {
-        $global:Label.Text = "エラー: 保存失敗 ($FilePath)"
+        $global:Label.Text = "エラー: 保存に失敗しました。 (保存先: $FilePath)"
         [System.Windows.Forms.MessageBox]::Show("保存に失敗しました。撮影が完了しているか、保存先にアクセスできるか確認してください。", "エラー") 
     }
 }
@@ -266,7 +268,7 @@ $global:MainForm.Controls.Add($PictureBox)
 $global:Label = New-Object System.Windows.Forms.Label
 $global:Label.Location = New-Object System.Drawing.Point([int]($Margin), [int]($CaptureHeight + $Margin * 2))
 $global:Label.Size = New-Object System.Drawing.Size($LabelWidth, $LabelHeight)
-$global:Label.Text = ""
+$global:Label.Text = "[撮影] をクリックしてください。"
 $global:Label.TextAlign = "MiddleLeft"
 $global:MainForm.Controls.Add($global:Label)
 
