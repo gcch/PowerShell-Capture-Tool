@@ -1,5 +1,9 @@
 ﻿Set-StrictMode -Version Latest
 
+# デバッグモード
+$DebugPreference = "SilentlyContinue"
+#$DebugPreference = "Continue"
+
 # 多重起動禁止
 Write-Debug "多重起動チェック"
 $Mutex = New-Object System.Threading.Mutex -ArgumentList $false, "Global¥$(Split-Path -Path $PSCommandPath -Leaf)"
@@ -26,9 +30,6 @@ Write-Debug ""
 Write-Debug "======================================================================"
 Write-Debug ""
 
-# デバッグモード
-$DebugPreference = "SilentlyContinue"
-#$DebugPreference = "Continue"
 
 # スクリプトフォルダへの移動
 $ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
