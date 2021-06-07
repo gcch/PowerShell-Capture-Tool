@@ -85,16 +85,19 @@ if ([System.Environment]::Is64BitProcess) {
 Write-Debug "> Process: $Architecture"
 $LibDir = Join-Path -Path $ScriptDir -ChildPath $Architecture
 
+
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "OpenCvSharpExtern.dll のコピー"
 $OpenCvSharpExternDLLFileName = "OpenCvSharpExtern.dll"
 $OpenCvSharpExternDLLFilePath = $(Join-Path -Path $LibDir -ChildPath $OpenCvSharpExternDLLFileName)
-if (Test-Path $OpenCvSharpExternDLLFilePath) {
-    Copy-Item $OpenCvSharpExternDLLFilePath $(Join-Path -Path $ScriptDir -ChildPath "$OpenCvSharpExternDLLFileName") -Force
-} else {
-    Write-Host "$OpenCvSharpExternDLLFileName が見つかりません。"
-    [System.Windows.Forms.MessageBox]::Show("$OpenCvSharpExternDLLFileName が見つかりません。", "エラー") 
-    exit(-1)
+if (-not (Test-Path $(Join-Path -Path $ScriptDir -ChildPath "$OpenCvSharpExternDLLFileName"))) {
+    if (Test-Path $OpenCvSharpExternDLLFilePath) {
+        Copy-Item $OpenCvSharpExternDLLFilePath $(Join-Path -Path $ScriptDir -ChildPath "$OpenCvSharpExternDLLFileName") -Force
+    } else {
+        Write-Host "$OpenCvSharpExternDLLFileName が見つかりません。"
+        [System.Windows.Forms.MessageBox]::Show("$OpenCvSharpExternDLLFileName が見つかりません。", "エラー") 
+        exit(-1)
+    }
 }
 
 Write-Debug "----------------------------------------------------------------------"

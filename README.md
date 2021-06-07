@@ -24,7 +24,7 @@ PowerShell + OpenCvSharp にて PC に接続された Web カメラで画像撮�
 1. 本スクリプトをダウンロードし、任意のフォルダ (以降、&lt;スクリプトフォルダ&gt; と記載) に解凍する
 1. [OpenCvSharp](https://github.com/shimat/opencvsharp/releases) からバイナリデータ (OpenCvSharp-x.y.z-YYYYMMDD.zip) をダウンロード
 1. ダウンロードした "OpenCvSharp-x.y.z-YYYYMMDD.zip" を解凍 (以降、&lt;OpenCvSharp 解凍フォルダ&gt; と記載)
-1. "&lt;OpenCvSharp 解凍フォルダ&gt;\ManagedLib\OpenCvSharp.dll" 及び 、"&lt;OpenCvSharp 解凍フォルダ&gt;\ManagedLib\OpenCvSharp.Extensions.dll" を &lt;スクリプトフォルダ&gt; 直下にコピー
+1. "&lt;OpenCvSharp 解凍フォルダ&gt;\ManagedLib\net461\OpenCvSharp.dll" 及び "&lt;OpenCvSharp 解凍フォルダ&gt;\ManagedLib\net461\OpenCvSharp.Extensions.dll" を &lt;スクリプトフォルダ&gt; 直下にコピー
 1. "&lt;OpenCvSharp 解凍フォルダ&gt;\NativeLib\win\x86\OpenCvSharpExtern.dll" を "&lt;スクリプトフォルダ&gt;\x86" にコピー
 1. "&lt;OpenCvSharp 解凍フォルダ&gt;\NativeLib\win\x64\OpenCvSharpExtern.dll" を "&lt;スクリプトフォルダ&gt;\x64" にコピー
 
