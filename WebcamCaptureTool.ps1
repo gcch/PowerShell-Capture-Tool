@@ -12,9 +12,29 @@ Set-StrictMode -Version Latest
 $DebugPreference = "SilentlyContinue"
 #$DebugPreference = "Continue"
 
+# スクリプト情報の取得＋フォルダへの移動
+$ScriptDir = ""
+$ScriptName = ""
+if ($MyInvocation.MyCommand.CommandType -eq "ExternalScript") {
+    $ScriptPath = $MyInvocation.MyCommand.Definition
+    $ScriptDir = Split-Path -Parent -Path $MyInvocation.MyCommand.Definition 
+    $ScriptName = [System.IO.Path]::GetFileNameWithoutExtension($MyInvocation.MyCommand.Path)
+} else {
+    $ScriptPath = [Environment]::GetCommandLineArgs()[0]
+    $ScriptDir = Split-Path -Parent -Path ([Environment]::GetCommandLineArgs()[0])
+    $ScriptName = [System.IO.Path]::GetFileNameWithoutExtension([Environment]::GetCommandLineArgs()[0]) 
+    if (!$ScriptDir) {
+        $ScriptDir = "." 
+    }
+}
+Write-Debug "> Script Path: $ScriptPath"
+Write-Debug "> Script Directory: $ScriptDir"
+Write-Debug "> Script Name: $ScriptName"
+Set-Location $ScriptDir
+
 # 多重起動禁止
 Write-Debug "多重起動チェック"
-$Mutex = New-Object System.Threading.Mutex -ArgumentList $false, "Global¥$(Split-Path -Path $PSCommandPath -Leaf)"
+$Mutex = New-Object System.Threading.Mutex -ArgumentList $false, "Global¥$ScriptName"
 try {
     if (-not $Mutex.WaitOne(0, $false)) {
         Write-Debug "> すでに起動済みです。終了します。"
@@ -38,13 +58,19 @@ Write-Debug ""
 Write-Debug "======================================================================"
 Write-Debug ""
 
-# スクリプトフォルダへの移動
-$ScriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
-Write-Debug "> Script Directory: $ScriptDir"
-Set-Location $ScriptDir
+# 設定ファイルの読み込み
+$ConfigFile = Join-Path -Path $ScriptDir -ChildPath "$ScriptName.ini"
+if (Test-Path $ConfigFile) {
+    $Params = @{}
+    Get-Content $ConfigFile | % { $Params += ConvertFrom-StringData $_ }
+}
 
 # 画像保存先
 $SaveDirectory = $ScriptDir
+if ($Params.SAVE_DIRECTORY -ne $null) {
+    $SaveDirectory = $Params.SAVE_DIRECTORY
+}
+Write-Debug "> Save Directory: $SaveDirectory"
 
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "動作環境"
@@ -62,7 +88,14 @@ $LibDir = Join-Path -Path $ScriptDir -ChildPath $Architecture
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "OpenCvSharpExtern.dll のコピー"
 $OpenCvSharpExternDLLFileName = "OpenCvSharpExtern.dll"
-Copy-Item $(Join-Path -Path $LibDir -ChildPath "$OpenCvSharpExternDLLFileName") $(Join-Path -Path $ScriptDir -ChildPath "$OpenCvSharpExternDLLFileName") -Force
+$OpenCvSharpExternDLLFilePath = $(Join-Path -Path $LibDir -ChildPath $OpenCvSharpExternDLLFileName)
+if (Test-Path $OpenCvSharpExternDLLFilePath) {
+    Copy-Item $OpenCvSharpExternDLLFilePath $(Join-Path -Path $ScriptDir -ChildPath "$OpenCvSharpExternDLLFileName") -Force
+} else {
+    Write-Host "$OpenCvSharpExternDLLFileName が見つかりません。"
+    [System.Windows.Forms.MessageBox]::Show("$OpenCvSharpExternDLLFileName が見つかりません。", "エラー") 
+    exit(-1)
+}
 
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "アセンブリのロード"
@@ -72,11 +105,24 @@ Add-Type -AssemblyName System.Drawing
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "OpenCvSharp のロード"
 $OpenCvSharpDLL = Join-Path -Path $ScriptDir -ChildPath "OpenCvSharp.dll"
-$Res = [System.Reflection.Assembly]::LoadFrom($OpenCvSharpDLL)
-Write-Debug "> $Res"
+if (Test-Path $OpenCvSharpDLL) {
+    $Res = [System.Reflection.Assembly]::LoadFrom($OpenCvSharpDLL)
+    Write-Debug "> $Res"
+} else {
+    Write-Host "$OpenCvSharpDLL が見つかりません。"
+    [System.Windows.Forms.MessageBox]::Show("$OpenCvSharpDLL が見つかりません。", "エラー") 
+    exit(-1)
+}
+
 $OpenCvSharpExtDLL = Join-Path -Path $ScriptDir -ChildPath "OpenCvSharp.Extensions.dll"
-$Res = [System.Reflection.Assembly]::LoadFrom($OpenCvSharpExtDLL)
-Write-Debug "> $Res"
+if (Test-Path $OpenCvSharpExtDLL) {
+    $Res = [System.Reflection.Assembly]::LoadFrom($OpenCvSharpExtDLL)
+    Write-Debug "> $Res"
+} else {
+    Write-Host "$OpenCvSharpExtDLL が見つかりません。"
+    [System.Windows.Forms.MessageBox]::Show("$OpenCvSharpExtDLL が見つかりません。", "エラー") 
+    exit(-1)
+}
 
 Write-Debug "----------------------------------------------------------------------"
 Write-Debug "アセンブリロード状況"
@@ -115,6 +161,14 @@ $global:LoadForm.Controls.Add($global:LoadMessageLabel)
 
 $CaptureWidth = [int]1280
 $CaptureHeight = [int]720
+if ($Params.CAPTURE_WIDTH -ne $null) {
+    $CaptureWidth = [int]$Params.CAPTURE_WIDTH
+}
+Write-Debug "> Capture Width: $CaptureWidth"
+if ($Params.CAPTURE_HEIGHT -ne $null) {
+    $CaptureHeight = [int]$Params.CAPTURE_HEIGHT
+}
+Write-Debug "> Capture Height: $CaptureHeight"
 
 $global:Capture = [OpenCvSharp.VideoCapture]::new()
 [void]$global:Capture.Open(0)
@@ -154,6 +208,7 @@ function Capture() {
         $global:PictureBox.Image = $Bitmap
         $global:AlreadySaved = $false
     } catch {
+        Write-Debug $_.Exception.Message
         [System.Windows.Forms.MessageBox]::Show("カメラのオープンに失敗しました。カメラを使用しているアプリケーションを使用している場合には、そのアプリケーションを終了した後、再試行してください。", "エラー") 
     }
 }

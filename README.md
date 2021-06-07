@@ -29,17 +29,22 @@ PowerShell + OpenCvSharp にて PC に接続された Web カメラで画像撮�
 1. "&lt;OpenCvSharp 解凍フォルダ&gt;\NativeLib\win\x64\OpenCvSharpExtern.dll" を "&lt;スクリプトフォルダ&gt;\x64" にコピー
 
 ## Setting
-「WebcamCaptureTool.ps1」を編集し、画像保存先フォルダを設定してください。デフォルトではスクリプトと同じフォルダが設定されています。
+「WebcamCaptureTool.ini」を編集し、画像保存先フォルダを設定してください。デフォルトではスクリプトと同じフォルダが設定されています。
 
 ```
-$SaveDirectory = <保存先フォルダパス>
+SAVE_DIRECTORY=<保存先フォルダパス>
+CAPTURE_WIDTH=1280
+CAPTURE_HEIGHT=720
 ```
 
 ## Launch
-「WebcamCaptureTool.vbs」をダブルクリップして起動してください。
+「WebcamCaptureTool.vbs」または「WebcamCaptureTool.exe」をダブルクリップして起動してください。 (exe ファイルは PS2EXE にてコンパイルしたものです。)
+
 
 ## References
 - [GitHub - shimat/opencvsharp: OpenCV wrapper for .NET](https://github.com/shimat/opencvsharp)
+- [GitHub - MScholtes/PS2EXE: Module to compile powershell scripts to executables](https://github.com/MScholtes/PS2EXE)
+
 
 ## License
 All components are licensed under Apache License 2.0.
